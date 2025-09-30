@@ -1,0 +1,30 @@
+[core]
+	editor = vim
+	excludesFile = ~/.gitignore
+	autocrlf = false
+	eol = lf
+[push]
+	autoSetupRemote = true
+	default = current
+[alias]
+	# create a new branch 'branch-name/david' forked from the default branch
+	david = "!f() { git fetch && git switch -c \"$1/david\" origin/$(git remote show origin | sed -n '/HEAD branch/s/.*: //p'); }; f"
+	# amend the most recent commit but only if it hasn't been pushed yet
+	amend = !git branch -r --contains HEAD | grep -q "origin/$(git branch --show-current)" && echo "Error: Cannot amend - commit pushed" && exit 1 || git commit --amend --no-edit
+	# merge commit the default branch into the current one
+	mermaster = !git pull --no-rebase origin $(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+	# rebase the current branch ontop of the default branch
+	remaster = !git fetch && git rebase origin/$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+	# reset any changes to the checked out branch to the latest from origin
+	force-sync = !git fetch && git reset --hard origin/$(git branch --show-current)
+	lo = log -n 10 --pretty='%C(yellow)%h %C(cyan)%cd %<(12,trunc)%Cblue%aN%C(auto)%d %Creset%s' --date=short --date-order
+	lss = log --shortstat
+	pf = push --force-with-lease
+	cherry-all = "!f() { git cherry-pick $(git merge-base \"$1\" HEAD)..\"$1\"; }; f"
+	l = !git --no-pager log --shortstat -1 --pretty=fuller
+	l1s = !git --no-pager log --stat -1 --pretty=fuller
+	branches = for-each-ref --format='%(color:green)%(refname:short)%(color:reset)%09%(color:yellow)%(committerdate:relative)%(color:reset)%09%(color:red)%(upstream:track)%(color:reset)' refs/heads/ --sort=-committerdate
+[rerere]
+	enabled = true
+[rebase]
+	autoStash = true

@@ -1,0 +1,55 @@
+#!/bin/bash
+if [[ "$TERM_PROGRAM" == "vscode" && -f ".env" ]]; then
+    set -a; source .env; set +a
+    echo "✅ loaded .env"
+fi
+
+. ~/.shellrc_aliases
+. ~/.shellrc_secret
+source /usr/share/doc/fzf/examples/key-bindings.bash
+alias trivyy="trivy fs --scanners vuln,secret,misconfig --skip-dirs .venv ."
+alias knip="mise x node@latest -- npx knip"
+alias claude="mise x node@latest -- claude"
+alias ncu="mise x node@latest -- npx npm-check-updates"
+alias v='. ./.venv/bin/activate'
+alias htop='htop -t'
+
+# Rust Cargo
+. "$HOME/.cargo/env"
+
+# zoxide
+eval "$(zoxide init bash)"
+
+# opencode
+export PATH=$HOME/.opencode/bin:$PATH
+
+# cudnn
+export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+
+# pnpm
+alias pn=pnpm
+export PATH=$HOME/.local/share/pnpm:$PATH
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '$HOME/google-cloud-sdk/path.bash.inc' ]; then . '$HOME/google-cloud-sdk/path.bash.inc'; fi
+# The next line enables shell command completion for gcloud.
+if [ -f '$HOME/google-cloud-sdk/completion.bash.inc' ]; then . '$HOME/google-cloud-sdk/completion.bash.inc'; fi
+export ANDROID_HOME=$HOME/Android
+export PATH=$PATH:$ANDROID_HOME/cmdline-tools/bin
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+export PATH=$PATH:$JAVA_HOME/bin
+
+# automatically start SSH agent
+# for use in VS Code's Dev Containers running inside WSL2
+# https://code.visualstudio.com/remote/advancedcontainers/sharing-git-credentials#_using-ssh-keys
+if [ -z "$SSH_AUTH_SOCK" ]; then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]; then
+        # Launch a new instance of the agent
+        ssh-agent -s &> $HOME/.ssh/ssh-agent
+   fi
+   eval `cat $HOME/.ssh/ssh-agent` > /dev/null
+fi
+

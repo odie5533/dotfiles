@@ -1,0 +1,15 @@
+. ~/.bash_ecs_aliases
+
+alias ls="eza --header -l --hyperlink"
+alias tf=terraform
+alias dotfiles='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+alias ssh-hosts="grep -P \"^Host ([^*]+)$\" $HOME/.ssh/config | sed 's/Host //'"
+
+function ssh_alias() {
+  ssh "$@";
+  setterm -default -clear all;
+  #setterm -default -clear rest;
+  # If `-clear rest` gives error `setterm: argument error: 'rest'`, try `-clear reset` instead 
+}
+alias ssh=ssh_alias
+
